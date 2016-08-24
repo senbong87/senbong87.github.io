@@ -19,7 +19,7 @@ Apart from the academic research, I am passionate in machine learning and data s
 
 * **Machine Learning:** This is an area where I have found my passion in. I have experiences in solving different types of machine learning problems, including logistic regression, image classification, time series problem, pairing problem and text mining.
 
-* **Statistics:** My research experiences have taught me fundamental concepts of statistics. In many occasions, I have designed an experiment to study the effectiveness of a new algorithms.
+* **Statistics:** My research experiences have taught me fundamental concepts of statistics. In many occasions, I have designed an experiment to study the effectiveness of a new algorithm.
 
 * **Database:** As a data scientist, I have also become fluent with database querying languages. In many occasions, I have used SQL to perform some basic data wranging or feature engineering for data modeling or visualization purposes.
 
