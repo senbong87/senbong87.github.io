@@ -27,7 +27,7 @@ Apart from the academic research, I am passionate in machine learning and data s
 
 * **Programming Languages:** I have used C++ and Python for most of the data processing and research projects. I also have some experiences in R, Haskell, MATLAB, HTML, CSS, Javascript and PHP.
 
-* **Other Skills:** Object-oriented Programming, Imperative Programming, Functional Programming, Version Control System, Bash Script, Vim, LaTeX...
+* **Other Skills:** Object-oriented Programming, Imperative Programming, Functional Programming, Version Control System, Bash Script, Vim, LaTeX, Docker...
 
 
 ## Education
@@ -37,6 +37,7 @@ Apart from the academic research, I am passionate in machine learning and data s
     + Advisor: Prof. Tan Kay Chen
 * National University of Singapore (2007 -- 2011): Bachelor of Electrical Engineering (Hons) with Second Upper Class
     + Major in Communication and Minors in Electronics, Radio Frequency Communication & Information Processing
+
 
 ## Publications
 
