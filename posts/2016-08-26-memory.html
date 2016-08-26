@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content>
+		<meta name="author" content>
+
+        <title>Senbong - Improve Memory Efficiency in Model Building</title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="../css/theme.css" />
+        <link rel="stylesheet" type="text/css" href="../css/custom.css" />
+
+        <!-- Others -->
+        <link rel="shortcut icon" type="image/x-icon" href="../images/favicon.ico" />
+
+        <!-- Syntax Highlight -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+		<script>hljs.initHighlightingOnLoad();</script>
+    </head>
+    <body>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-83209305-1', 'auto');
+                ga('send', 'pageview');
+        </script>
+
+		<!-- Navigation -->
+		<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container">
+				<!-- Brand and toggle get groupped for better mobile display -->
+				<div class="nav-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="../">Senbong's Blog</a>
+				</div>
+				<!-- Collect the nav links, forms, and other content for toggling -->
+				<div class="collapse navbar-collapse" id="bs-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							<a href="../about.html">About</a>
+						</li>
+						<li>
+							<a href="../contact.html">Contact</a>
+						</li>
+						<li>
+							<a href="../archive.html">Archive</a>
+						</li>
+					</ul>
+				</div>
+				<!-- /.navbar-collapse -->
+			</div>
+            <!-- /.container -->
+		</nav>
+
+        <!-- Page Content -->
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+
+                <h2>Improve Memory Efficiency in Model Building</h2>
+
+<div class="info">
+    Posted on August 26, 2016
+    
+</div>
+
+<div class="info">
+    
+    Tags: <a href="../tags/Python.html">Python</a>
+    
+</div>
+
+<div class="top15">
+    <p>During machine learning model building process, insufficient memory is a common issue especially for boosting or ensemble models. In this post, some techniques which I commonly use to reduce the memory usage are shared.</p>
+<h3 id="lazy-evaluation">Lazy Evaluation</h3>
+<p>Let’s start with a simple example of using <a href="http://scikit-learn.org/">scikit-learn</a> and <a href="http://pandas.pydata.org/">pandas</a> to train a Random Forest classifier.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> pandas <span class="im">as</span> pd
+<span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier
+
+train_df <span class="op">=</span> pd.read_csv(<span class="st">'train.csv'</span>)
+test_df <span class="op">=</span> pd.read_csv(<span class="st">'test.csv'</span>)
+
+target <span class="op">=</span> <span class="st">'target'</span>           <span class="co"># target column name</span>
+feats <span class="op">=</span> [<span class="st">'feat1'</span>, <span class="st">'feat2'</span>]  <span class="co"># feature column names</span>
+
+cls <span class="op">=</span> RandomForestClassifier()
+cls.fit_transform(train_df[feats], train_df[target])
+y_pred <span class="op">=</span> cls.predict(test_df[feats])</code></pre></div>
+<p>The above code works well when both training and testing datasets can be fitted into memory. The insufficient memory issue appears when the computer memory is sufficient only for one dataset. A simple way to get around this issue would be loading the dataset only when it is required.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> pandas <span class="im">as</span> pd
+<span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier
+
+<span class="kw">def</span> build_model(filename, feats, target):
+    df <span class="op">=</span> pd.read_csv(filename)
+    cls <span class="op">=</span> RandomForestClassifier()
+    cls.fit_transform(df[feats], df[target])
+    <span class="cf">return</span> cls
+
+target <span class="op">=</span> <span class="st">'target'</span>           <span class="co"># target column name</span>
+feats <span class="op">=</span> [<span class="st">'feat1'</span>, <span class="st">'feat2'</span>]  <span class="co"># feature column names</span>
+cls <span class="op">=</span> build_model(<span class="st">'train.csv'</span>, feats, target)
+test_df <span class="op">=</span> pd.read_csv(<span class="st">'test.csv'</span>)
+y_pred <span class="op">=</span> cls.predict(test_df[feats])</code></pre></div>
+<p>Wait! This isn’t <a href="https://en.wikipedia.org/wiki/Lazy_evaluation">Lazy Evaluation</a>? To achieve the effect, the code can be written in a functional way. The resources are loaded only when they are required.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> pandas <span class="im">as</span> pd
+<span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier
+
+<span class="kw">def</span> load_feature(filename, feats):
+    <span class="cf">return</span> pd.read_csv(filename, usecols<span class="op">=</span>feats)
+
+<span class="kw">def</span> load_target(filename, target):
+    <span class="cf">return</span> pd.read_csv(filename, usecols<span class="op">=</span>[target]).values
+
+<span class="kw">def</span> build_model(filename, feats, target):
+    cls <span class="op">=</span> RandomForestClassifier()
+    cls.fit_transform(load_feature(filename, feats),
+                      load_target(filename, target))
+    <span class="cf">return</span> cls
+
+<span class="kw">def</span> predict(cls, filename, feats):
+    <span class="cf">return</span> csl.predict(load_feature(filename, feats))
+
+train_file, test_file <span class="op">=</span> <span class="st">'train.csv'</span>, <span class="st">'test.csv'</span>
+target <span class="op">=</span> <span class="st">'target'</span>           <span class="co"># target column name</span>
+feats <span class="op">=</span> [<span class="st">'feat1'</span>, <span class="st">'feat2'</span>]  <span class="co"># feature column names</span>
+y_pred <span class="op">=</span> predict(build_model(train_file, feats, target), test_file, feats)</code></pre></div>
+<h3 id="sparse-matrix">Sparse Matrix</h3>
+<p><a href="https://en.wikipedia.org/wiki/One-hot">One-hot encoding</a> is a popular technique which is used to preprocess categorical features. When combining numerical features with one-hot encoded features, it is suggested to store the output in sparse matrix format to reduce the memory usage. The effect of reduction memory usage is more significant when the number of categories is very high.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> numpy <span class="im">as</span> np
+<span class="im">import</span> pandas <span class="im">as</span> pd
+<span class="im">import</span> scipy.sparse <span class="im">as</span> sparse
+<span class="im">from</span> sklearn.feature_extraction.text.CountVectorizer
+
+sp_feats <span class="op">=</span> [<span class="st">'cat1'</span>]                 <span class="co"># categorical feature name</span>
+dn_feats <span class="op">=</span> [<span class="st">'num1'</span>, <span class="st">'num2'</span>]         <span class="co"># numerical feature name</span>
+df <span class="op">=</span> pd.read_csv(<span class="st">'train.csv'</span>)
+vec <span class="op">=</span> CountVectorizer()
+sp_matrix <span class="op">=</span> vec.fit_transform(df[feats].to_dict(orient<span class="op">=</span><span class="st">'record'</span>))   <span class="co"># sparse</span>
+dn_matrix <span class="op">=</span> df[dn_feats].values
+
+<span class="co"># dense matrix hstack -- memory inefficient</span>
+X <span class="op">=</span> np.hstack((sp_matrix.toarray(), dn_matrix))
+
+<span class="co"># sparse matrix hstack -- memory efficient</span>
+X <span class="op">=</span> sparse.hstack((sp_matrix, sparse.csr_matrix(dn_matrix)), <span class="bu">format</span><span class="op">=</span><span class="st">'csr'</span>)</code></pre></div>
+<h3 id="reduce-precision">Reduce Precision</h3>
+<p>Storing matrix in lower precision consumes less memory. This approach is viable only if it does not result loss of precision. When the feature matrix contains value which exceeds the maximum value of 32-bit float, this approach is not longer applicable.</p>
+<div class="sourceCode"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">import</span> numpy <span class="im">as</span> np
+<span class="im">import</span> pandas <span class="im">as</span> pd
+
+<span class="co"># reduce the precision from 64-bit to 32-bit</span>
+<span class="kw">def</span> load_matrix(filename):
+    <span class="cf">return</span> pd.read_csv(filename).values.astype(np.float32)</code></pre></div>
+</div>
+
+
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>Site proudly generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a> and <a href="http://getbootstrap.com/">Bootstrap</a>.</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <!-- Javascipt -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="../js/custom.js"></script>
+    </body>
+</html>
