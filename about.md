@@ -27,15 +27,17 @@ Apart from the academic research, I am passionate in machine learning and data s
 
 * **Programming Languages:** I have used C++ and Python for most of the data processing and research projects. I also have some experiences in R, Haskell, MATLAB, HTML, CSS, Javascript and PHP.
 
+* **Distributed & Cloud Computing:** Hadoop, Spark & AWS.
+
 * **Other Skills:** Object-oriented Programming, Imperative Programming, Functional Programming, Version Control System, Bash Script, Vim, LaTeX, Docker...
 
 
 ## Education
 
-* National University of Singapore (2012 -- 2016): Ph.D in Electrical & Computer Engineering
+* **National University of Singapore (2012 -- 2016):** Ph.D in Electrical & Computer Engineering
     + Dissertation Topic: Evolutionary Multi-objective Optimization in Static and Dynamic Environments
     + Advisor: Prof. Tan Kay Chen
-* National University of Singapore (2007 -- 2011): Bachelor of Electrical Engineering (Hons) with Second Upper Class
+* **National University of Singapore (2007 -- 2011):** Bachelor of Electrical Engineering (Hons) with Second Upper Class
     + Major in Communication and Minors in Electronics, Radio Frequency Communication & Information Processing
 
 
