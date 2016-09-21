@@ -14,6 +14,14 @@ footer {
     float: right !important;
 }
 
+#neural-style-mona-lisa {
+    height: 200px;
+}
+
+#neural-style-combined {
+    height: 177px;
+}
+
 .top5 { margin-top:5px; }
 .top7 { margin-top:7px; }
 .top10 { margin-top:10px; }
