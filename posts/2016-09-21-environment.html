@@ -86,17 +86,35 @@
 
 <div class="top15">
     <p>Setting up a deep learning development environment sometime can be a bit painful. There was a certain point in time, <a href="http://deeplearning.net/software/theano/">Theano</a> and <a href="https://www.tensorflow.org/">Tensorflow</a> recommend different version of <a href="https://developer.nvidia.com/cuda-toolkit">CUDA Toolkit</a> and <a href="https://developer.nvidia.com/cudnn">cuDNN</a>. To install different versions from official recommendation, it requires developer to install the library from source code. The most painful time is that those source code requires different version of <a href="https://gcc.gnu.org/">GNU Compiler Collection (GCC)</a> than the current GCC version on my computer. The whole process is rather painful and unfruitful.</p>
-<p>Luckily, <a href="https://www.docker.com/">Docker</a> comes to rescue! We just need to install different versions of software library in different image and everything should work well (at the time this post is written, the official Theano and Tensorflow can run on the CUDA Toolkit 7.5 and cuDNN 5.0). The docker files can be found in <a href="https://github.com/senbong87/deep-learning-dev-environment">the repository</a>.</p>
+<p>Luckily, <a href="https://www.docker.com/">Docker</a> comes to rescue! We just need to install different versions of software library in different image and everything should work well. The docker files can be found in the <a href="https://github.com/senbong87/deep-learning-dev-environment">repository</a>.</p>
+<h3 id="building-docker-images">Building Docker Images</h3>
 <p>After downloading the Git repository, we just have to build the two images using following command in the project root:</p>
-<pre><code>docker build -t senbong/lasagne:base -f lasagne/Dockerfile lasagne
-docker build -t senbong/tensorflow:base -f tensorflow/Dockerfile tensorflow</code></pre>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">docker</span> build -t senbong/lasagne:base -f lasagne/Dockerfile lasagne
+<span class="kw">docker</span> build -t senbong/tensorflow:base -f tensorflow/Dockerfile tensorflow</code></pre></div>
 <p>After the two images have been built, we just need to create a container and run it:</p>
-<pre><code>nvidia-docker run --rm -it --volume `pwd`/Workspace:/root/Workspace senbong/lasagne:base /bin/bash
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="kw">nvidia-docker</span> run --rm -it --volume <span class="kw">`pwd`</span>/Workspace:/root/Workspace senbong/lasagne:base /bin/bash
 
-# or
+<span class="co"># and/or</span>
 
-nvidia-docker run --rm -it --volume `pwd`/Workspace:/root/Workspace senbong/tensorflow:base /bin/bash</code></pre>
+<span class="kw">nvidia-docker</span> run --rm -it --volume <span class="kw">`pwd`</span>/Workspace:/root/Workspace senbong/tensorflow:base /bin/bash</code></pre></div>
 <p>Here, the <code>--rm</code> flag suggests that the container will be remove after the command exits whereas <code>-it</code> flags (<code>-i</code> and <code>-t</code> flags) instruct Docker to keep the STDIN open and create a virtual terminal. The <code>--volume</code> flag bind the file/directory in the host computer to the container’s file/directory. We can put our source code inside the working directory and run the code inside the container. With this new tool, the software package management is much easier without worrying about breaking the dependencies of the host computer.</p>
+<h3 id="test-run">Test Run</h3>
+<p>Let’s use one of the docker images to run an interesting application. <a href="https://arxiv.org/abs/1508.06576">Neural Style</a> is an application to use the convolutionary neural network to combine the content and style two images into a single image. There is an implementation of the algorithm using Tensorflow and it can be downloaded in the GitHub <a href="https://github.com/anishathalye/neural-style">repository</a>.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># download the neural style source code</span>
+<span class="kw">git</span> clone https://github.com/anishathalye/neural-style
+
+<span class="co"># create a container to run the code</span>
+<span class="kw">nvidia-docker</span> run --rm -it -w /root/Workspace \
+    --volume <span class="kw">`pwd`</span>/neural-style:/root/Workspace senbong/tensorflow:base /bin/bash</code></pre></div>
+<p>After accessing into the container’s shell, we should be in the project root of the neural-style. To run the example, we have to download the pre-trained VGG network. In this post, I will combine my graduation photo with the famous <a href="https://en.wikipedia.org/wiki/Mona_Lisa">Mona Lisa</a> painting.</p>
+<div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="co"># download the pre-trained VGG network (this may take some time...)</span>
+<span class="kw">wget</span> http://www.vlfeat.org/matconvnet/models/beta16/imagenet-vgg-verydeep-19.mat
+
+<span class="co"># generate the combined image</span>
+<span class="kw">python</span> neural_style.py --content photo.jpg --styles mona_lisa.jpg --output combined_photo.jpg</code></pre></div>
+<p>And this is the result…</p>
+<p><img src="../images/photo.jpg" title="my graduation photo" /> + <img src="../images/mona_lisa.jpg" title="Mona Lisa painting" id="neural-style-mona-lisa" /> = <img src="../images/combined_photo.jpg" title="combined photo" id="neural-style-combined" /></p>
+<p>Ok… I think I should use another photo… =P</p>
 </div>
 
 
